@@ -30,7 +30,7 @@ from transformers.optimization import (
 
 from config.model_args import T5Args
 from config.utils import sweep_config_to_sweep_values
-from t5_utils import T5Dataset, load_hf_dataset
+from t5.t5_utils import T5Dataset, load_hf_dataset
 
 try:
     import wandb
