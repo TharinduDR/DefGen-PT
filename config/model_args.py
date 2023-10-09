@@ -238,6 +238,7 @@ class T5Args(ModelArgs):
     adafactor_warmup_init: bool = False
     learning_rate: float = 1e-3
     optimizer: str = "Adafactor"
+    save_recent_only: bool = True
     special_tokens_list: list = field(default_factory=list)
     top_k: float = None
     top_p: float = None
