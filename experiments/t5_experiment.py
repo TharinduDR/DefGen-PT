@@ -14,7 +14,7 @@ model_type = "mt5"
 SEED = 777
 full = pd.read_csv("data/pt.defmod.wholeset.tag.tsv", sep="\t")
 full["prefix"] = ""
-full = full.rename(columns={'context': 'input_text', 'gloss': 'output_text'})
+full = full.rename(columns={'context': 'input_text', 'gloss': 'target_text'})
 
 full_train, test = train_test_split(full, test_size=0.2, random_state=SEED)
 
