@@ -20,7 +20,7 @@ full = full.rename(columns={'context': 'input_text', 'gloss': 'target_text'})
 full_train, test = train_test_split(full, test_size=0.2, random_state=SEED)
 
 model_args = T5Args()
-model_args.num_train_epochs = 5
+model_args.num_train_epochs = 10
 model_args.no_save = False
 model_args.fp16 = False
 model_args.learning_rate = 1e-4
@@ -50,13 +50,15 @@ model_args.wandb_kwargs = {"name": model_name}
 model = T5Model(model_type, model_name, args=model_args, use_cuda=torch.cuda.is_available())
 
 train, eval = train_test_split(full_train, test_size=0.2, random_state=SEED)
-model.train_model(train, eval_data=eval, Bleu=bleu, Ter=ter, BERTScore=bertscore, Bleurt=bleurt_score)
+model.train_model(train, eval_data=eval)
 
 input_list = test['input_text'].tolist()
 truth_list = test['target_text'].tolist()
 
 model = T5Model(model_type, model_args.best_model_dir, args=model_args, use_cuda=torch.cuda.is_available())
 preds = model.predict(input_list)
+
+del model
 
 print("Bleu Score ", bleu(truth_list, preds))
 print("Ter Score ", ter(truth_list, preds))
