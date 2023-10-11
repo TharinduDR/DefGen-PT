@@ -323,6 +323,7 @@ class Seq2SeqArgs(ModelArgs):
     repetition_penalty: float = 1.0
     save_knowledge_dataset: bool = True
     save_knowledge_dataset_with_checkpoints: bool = False
+    save_recent_only: bool = True
     split_text_character: str = " "
     split_text_n: int = 100
     src_lang: str = "en_XX"
