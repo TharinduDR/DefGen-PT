@@ -5,10 +5,10 @@ import torch
 from sklearn.model_selection import train_test_split
 
 from config.model_args import T5Args
-from experiments.evaluate import bleu, ter, rouge_n
+from experiments.evaluate import bleu, ter, bertscore, bleurt_score
 from t5.t5_model import T5Model
 
-model_name = "google/mt5-large"
+model_name = "google/mt5-base"
 model_type = "mt5"
 
 
@@ -40,9 +40,9 @@ model_args.manual_seed = SEED
 model_args.early_stopping_patience = 25
 model_args.save_steps = 3200
 
-model_args.output_dir = os.path.join("outputs", "mt5")
-model_args.best_model_dir = os.path.join("outputs", "mt5", "best_model")
-model_args.cache_dir = os.path.join("cache_dir", "mt5")
+model_args.output_dir = os.path.join("outputs", "mt5_base")
+model_args.best_model_dir = os.path.join("outputs", "mt5_base", "best_model")
+model_args.cache_dir = os.path.join("cache_dir", "mt5_base")
 
 model_args.wandb_project = "DORE"
 model_args.wandb_kwargs = {"name": model_name}
@@ -50,7 +50,7 @@ model_args.wandb_kwargs = {"name": model_name}
 model = T5Model(model_type, model_name, args=model_args, use_cuda=torch.cuda.is_available())
 
 train, eval = train_test_split(full_train, test_size=0.2, random_state=SEED)
-model.train_model(train, eval_data=eval)
+model.train_model(train, eval_data=eval, Bleu=bleu, Ter=ter, BERTScore=bertscore, Bleurt=bleurt_score)
 
 input_list = test['input_text'].tolist()
 truth_list = test['target_text'].tolist()
@@ -60,5 +60,6 @@ preds = model.predict(input_list)
 
 print("Bleu Score ", bleu(truth_list, preds))
 print("Ter Score ", ter(truth_list, preds))
-print("Rough Score ", rouge_n(truth_list, preds))
+print("BERTScore ", bertscore(truth_list, preds))
+print("Bleurt ", bleurt_score(truth_list, preds))
 

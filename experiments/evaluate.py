@@ -1,5 +1,6 @@
 import pyter
 import itertools
+import statistics
 
 from datasets import load_metric
 from nltk.translate.bleu_score import SmoothingFunction, corpus_bleu, sentence_bleu
@@ -8,7 +9,12 @@ from nltk.translate.bleu_score import SmoothingFunction, corpus_bleu, sentence_b
 def bertscore(ref, gen):
     bertscore_metric = load_metric('bertscore')
     bert_scores = bertscore_metric.compute(predictions=gen, references=ref, lang="pt")
+    return statistics.mean(bert_scores['f1'])
 
+def bleurt_score(ref, gen):
+    bleurt = load_metric("bleurt", 'bleurt-20')
+    bleurt_scores = bleurt.compute(predictions=gen, references=ref)
+    return statistics.mean(bleurt_scores)
 
 
 def bleu(ref, gen):
