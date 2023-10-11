@@ -5,6 +5,7 @@ import torch
 from sklearn.model_selection import train_test_split
 
 from config.model_args import T5Args
+from experiments.evaluate import bleu, ter, rouge_n
 from t5.t5_model import T5Model
 
 model_name = "google/mt5-large"
@@ -50,4 +51,14 @@ model = T5Model(model_type, model_name, args=model_args, use_cuda=torch.cuda.is_
 
 train, eval = train_test_split(full_train, test_size=0.2, random_state=SEED)
 model.train_model(train, eval_data=eval)
+
+input_list = test['input_text'].tolist()
+truth_list = test['target_text'].tolist()
+
+model = T5Model(model_type, model_args.best_model_dir, args=model_args, use_cuda=torch.cuda.is_available())
+preds = model.predict(input_list)
+
+print("Bleu Score ", bleu(truth_list, preds))
+print("Ter Score ", ter(truth_list, preds))
+print("Rough Score ", rouge_n(truth_list, preds))
 
