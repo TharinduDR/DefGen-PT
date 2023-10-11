@@ -1,8 +1,10 @@
+import glob
 import json
 import logging
 import math
 import os
 import random
+import shutil
 import warnings
 from dataclasses import asdict
 from multiprocessing import Pool, cpu_count
@@ -119,24 +121,24 @@ MODEL_CLASSES = {
 
 class Seq2SeqModel:
     def __init__(
-        self,
-        encoder_type=None,
-        encoder_name=None,
-        decoder_name=None,
-        encoder_decoder_type=None,
-        encoder_decoder_name=None,
-        additional_special_tokens_encoder=None,
-        additional_special_tokens_decoder=None,
-        index_name=None,
-        knowledge_dataset=None,
-        index_path=None,
-        dpr_ctx_encoder_model_name=None,
-        rag_question_encoder_model_name=None,
-        config=None,
-        args=None,
-        use_cuda=True,
-        cuda_device=-1,
-        **kwargs,
+            self,
+            encoder_type=None,
+            encoder_name=None,
+            decoder_name=None,
+            encoder_decoder_type=None,
+            encoder_decoder_name=None,
+            additional_special_tokens_encoder=None,
+            additional_special_tokens_decoder=None,
+            index_name=None,
+            knowledge_dataset=None,
+            index_path=None,
+            dpr_ctx_encoder_model_name=None,
+            rag_question_encoder_model_name=None,
+            config=None,
+            args=None,
+            use_cuda=True,
+            cuda_device=-1,
+            **kwargs,
     ):
 
         """
@@ -259,7 +261,7 @@ class Seq2SeqModel:
                     if index_path:
                         self.dataset.load_faiss_index("embeddings", index_path)
                     elif os.path.isfile(
-                        os.path.join(knowledge_dataset, "hf_dataset_index.faiss")
+                            os.path.join(knowledge_dataset, "hf_dataset_index.faiss")
                     ):
                         self.dataset.load_faiss_index(
                             "embeddings",
@@ -312,7 +314,7 @@ class Seq2SeqModel:
 
             if encoder_decoder_type in ["bart", "mbart", "mbart50", "marian"]:
                 self.model = model_class.from_pretrained(encoder_decoder_name)
-                if encoder_decoder_type in ["bart", "mbart","mbart50"]:
+                if encoder_decoder_type in ["bart", "mbart", "mbart50"]:
                     self.encoder_tokenizer = tokenizer_class.from_pretrained(
                         encoder_decoder_name
                     )
@@ -386,14 +388,14 @@ class Seq2SeqModel:
                 self.args.model_type = "encoder-decoder"
 
     def train_model(
-        self,
-        train_data,
-        output_dir=None,
-        show_running_loss=True,
-        args=None,
-        eval_data=None,
-        verbose=True,
-        **kwargs,
+            self,
+            train_data,
+            output_dir=None,
+            show_running_loss=True,
+            args=None,
+            eval_data=None,
+            verbose=True,
+            **kwargs,
     ):
         """
         Trains the model using 'train_data'
@@ -432,9 +434,9 @@ class Seq2SeqModel:
             output_dir = self.args.output_dir
 
         if (
-            os.path.exists(output_dir)
-            and os.listdir(output_dir)
-            and not self.args.overwrite_output_dir
+                os.path.exists(output_dir)
+                and os.listdir(output_dir)
+                and not self.args.overwrite_output_dir
         ):
             raise ValueError(
                 "Output directory ({}) already exists and is not empty."
@@ -456,6 +458,11 @@ class Seq2SeqModel:
             **kwargs,
         )
 
+        if args.save_recent_only:
+            del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
+            for del_path in del_paths:
+                shutil.rmtree(del_path)
+
         self.save_model(self.args.output_dir, model=self.model)
 
         # model_to_save = self.model.module if hasattr(self.model, "module") else self.model
@@ -474,13 +481,13 @@ class Seq2SeqModel:
         return global_step, training_details
 
     def train(
-        self,
-        train_dataset,
-        output_dir,
-        show_running_loss=True,
-        eval_data=None,
-        verbose=True,
-        **kwargs,
+            self,
+            train_dataset,
+            output_dir,
+            show_running_loss=True,
+            eval_data=None,
+            verbose=True,
+            **kwargs,
     ):
         """
         Trains the model on train_dataset.
@@ -503,15 +510,15 @@ class Seq2SeqModel:
         if args.max_steps > 0:
             t_total = args.max_steps
             args.num_train_epochs = (
-                args.max_steps
-                // (len(train_dataloader) // args.gradient_accumulation_steps)
-                + 1
+                    args.max_steps
+                    // (len(train_dataloader) // args.gradient_accumulation_steps)
+                    + 1
             )
         else:
             t_total = (
-                len(train_dataloader)
-                // args.gradient_accumulation_steps
-                * args.num_train_epochs
+                    len(train_dataloader)
+                    // args.gradient_accumulation_steps
+                    * args.num_train_epochs
             )
 
         no_decay = ["bias", "LayerNorm.weight"]
@@ -556,7 +563,7 @@ class Seq2SeqModel:
                             p
                             for n, p in model.named_parameters()
                             if n not in custom_parameter_names
-                            and not any(nd in n for nd in no_decay)
+                               and not any(nd in n for nd in no_decay)
                         ],
                         "weight_decay": args.weight_decay,
                     },
@@ -565,7 +572,7 @@ class Seq2SeqModel:
                             p
                             for n, p in model.named_parameters()
                             if n not in custom_parameter_names
-                            and any(nd in n for nd in no_decay)
+                               and any(nd in n for nd in no_decay)
                         ],
                         "weight_decay": 0.0,
                     },
@@ -650,9 +657,9 @@ class Seq2SeqModel:
             raise ValueError("{} is not a valid scheduler.".format(args.scheduler))
 
         if (
-            args.model_name
-            and os.path.isfile(os.path.join(args.model_name, "optimizer.pt"))
-            and os.path.isfile(os.path.join(args.model_name, "scheduler.pt"))
+                args.model_name
+                and os.path.isfile(os.path.join(args.model_name, "optimizer.pt"))
+                and os.path.isfile(os.path.join(args.model_name, "scheduler.pt"))
         ):
             # Load in optimizer and scheduler states
             optimizer.load_state_dict(
@@ -690,10 +697,10 @@ class Seq2SeqModel:
                     checkpoint_suffix = checkpoint_suffix[-1]
                 global_step = int(checkpoint_suffix)
                 epochs_trained = global_step // (
-                    len(train_dataloader) // args.gradient_accumulation_steps
+                        len(train_dataloader) // args.gradient_accumulation_steps
                 )
                 steps_trained_in_current_epoch = global_step % (
-                    len(train_dataloader) // args.gradient_accumulation_steps
+                        len(train_dataloader) // args.gradient_accumulation_steps
                 )
 
                 logger.info(
@@ -766,7 +773,7 @@ class Seq2SeqModel:
 
                 if show_running_loss:
                     batch_iterator.set_description(
-                        f"Epochs {epoch_number+1}/{args.num_train_epochs}. Running Loss: {current_loss:9.4f}"
+                        f"Epochs {epoch_number + 1}/{args.num_train_epochs}. Running Loss: {current_loss:9.4f}"
                     )
 
                 if args.gradient_accumulation_steps > 1:
@@ -821,13 +828,18 @@ class Seq2SeqModel:
                             output_dir, "checkpoint-{}".format(global_step)
                         )
 
+                        if args.save_recent_only:
+                            del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
+                            for del_path in del_paths:
+                                shutil.rmtree(del_path)
+
                         self.save_model(
                             output_dir_current, optimizer, scheduler, model=model
                         )
 
                     if args.evaluate_during_training and (
-                        args.evaluate_during_training_steps > 0
-                        and global_step % args.evaluate_during_training_steps == 0
+                            args.evaluate_during_training_steps > 0
+                            and global_step % args.evaluate_during_training_steps == 0
                     ):
                         # Only evaluate when single GPU otherwise metrics may not average well
                         results = self.eval_model(
@@ -849,6 +861,13 @@ class Seq2SeqModel:
                         )
 
                         if args.save_eval_checkpoints:
+
+                            if args.save_recent_only:
+                                del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
+                                for del_path in del_paths:
+                                    shutil.rmtree(del_path)
+
+
                             self.save_model(
                                 output_dir_current,
                                 optimizer,
@@ -875,6 +894,12 @@ class Seq2SeqModel:
                         if not best_eval_metric:
                             best_eval_metric = results[args.early_stopping_metric]
                             if args.save_best_model:
+
+                                if args.save_recent_only:
+                                    del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
+                                    for del_path in del_paths:
+                                        shutil.rmtree(del_path)
+
                                 self.save_model(
                                     args.best_model_dir,
                                     optimizer,
@@ -884,11 +909,16 @@ class Seq2SeqModel:
                                 )
                         if best_eval_metric and args.early_stopping_metric_minimize:
                             if (
-                                results[args.early_stopping_metric] - best_eval_metric
-                                < args.early_stopping_delta
+                                    results[args.early_stopping_metric] - best_eval_metric
+                                    < args.early_stopping_delta
                             ):
                                 best_eval_metric = results[args.early_stopping_metric]
                                 if args.save_best_model:
+                                    if args.save_recent_only:
+                                        del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
+                                        for del_path in del_paths:
+                                            shutil.rmtree(del_path)
+
                                     self.save_model(
                                         args.best_model_dir,
                                         optimizer,
@@ -900,8 +930,8 @@ class Seq2SeqModel:
                             else:
                                 if args.use_early_stopping:
                                     if (
-                                        early_stopping_counter
-                                        < args.early_stopping_patience
+                                            early_stopping_counter
+                                            < args.early_stopping_patience
                                     ):
                                         early_stopping_counter += 1
                                         if verbose:
@@ -929,11 +959,17 @@ class Seq2SeqModel:
                                         )
                         else:
                             if (
-                                results[args.early_stopping_metric] - best_eval_metric
-                                > args.early_stopping_delta
+                                    results[args.early_stopping_metric] - best_eval_metric
+                                    > args.early_stopping_delta
                             ):
                                 best_eval_metric = results[args.early_stopping_metric]
                                 if args.save_best_model:
+
+                                    if args.save_recent_only:
+                                        del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
+                                        for del_path in del_paths:
+                                            shutil.rmtree(del_path)
+
                                     self.save_model(
                                         args.best_model_dir,
                                         optimizer,
@@ -945,8 +981,8 @@ class Seq2SeqModel:
                             else:
                                 if args.use_early_stopping:
                                     if (
-                                        early_stopping_counter
-                                        < args.early_stopping_patience
+                                            early_stopping_counter
+                                            < args.early_stopping_patience
                                     ):
                                         early_stopping_counter += 1
                                         if verbose:
@@ -983,6 +1019,12 @@ class Seq2SeqModel:
                 os.makedirs(output_dir_current, exist_ok=True)
 
             if args.save_model_every_epoch:
+
+                if args.save_recent_only:
+                    del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
+                    for del_path in del_paths:
+                        shutil.rmtree(del_path)
+
                 self.save_model(output_dir_current, optimizer, scheduler, model=model)
 
             if args.evaluate_during_training and args.evaluate_each_epoch:
@@ -994,6 +1036,12 @@ class Seq2SeqModel:
                 )
 
                 if args.save_eval_checkpoints:
+
+                    if args.save_recent_only:
+                        del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
+                        for del_path in del_paths:
+                            shutil.rmtree(del_path)
+
                     self.save_model(
                         output_dir_current, optimizer, scheduler, results=results
                     )
@@ -1014,6 +1062,12 @@ class Seq2SeqModel:
                 if not best_eval_metric:
                     best_eval_metric = results[args.early_stopping_metric]
                     if args.save_best_model:
+
+                        if args.save_recent_only:
+                            del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
+                            for del_path in del_paths:
+                                shutil.rmtree(del_path)
+
                         self.save_model(
                             args.best_model_dir,
                             optimizer,
@@ -1023,11 +1077,17 @@ class Seq2SeqModel:
                         )
                 if best_eval_metric and args.early_stopping_metric_minimize:
                     if (
-                        results[args.early_stopping_metric] - best_eval_metric
-                        < args.early_stopping_delta
+                            results[args.early_stopping_metric] - best_eval_metric
+                            < args.early_stopping_delta
                     ):
                         best_eval_metric = results[args.early_stopping_metric]
                         if args.save_best_model:
+
+                            if args.save_recent_only:
+                                del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
+                                for del_path in del_paths:
+                                    shutil.rmtree(del_path)
+
                             self.save_model(
                                 args.best_model_dir,
                                 optimizer,
@@ -1038,8 +1098,8 @@ class Seq2SeqModel:
                         early_stopping_counter = 0
                     else:
                         if (
-                            args.use_early_stopping
-                            and args.early_stopping_consider_epochs
+                                args.use_early_stopping
+                                and args.early_stopping_consider_epochs
                         ):
                             if early_stopping_counter < args.early_stopping_patience:
                                 early_stopping_counter += 1
@@ -1068,11 +1128,17 @@ class Seq2SeqModel:
                                 )
                 else:
                     if (
-                        results[args.early_stopping_metric] - best_eval_metric
-                        > args.early_stopping_delta
+                            results[args.early_stopping_metric] - best_eval_metric
+                            > args.early_stopping_delta
                     ):
                         best_eval_metric = results[args.early_stopping_metric]
                         if args.save_best_model:
+
+                            if args.save_recent_only:
+                                del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
+                                for del_path in del_paths:
+                                    shutil.rmtree(del_path)
+
                             self.save_model(
                                 args.best_model_dir,
                                 optimizer,
@@ -1083,8 +1149,8 @@ class Seq2SeqModel:
                         early_stopping_counter = 0
                     else:
                         if (
-                            args.use_early_stopping
-                            and args.early_stopping_consider_epochs
+                                args.use_early_stopping
+                                and args.early_stopping_consider_epochs
                         ):
                             if early_stopping_counter < args.early_stopping_patience:
                                 early_stopping_counter += 1
@@ -1120,7 +1186,7 @@ class Seq2SeqModel:
         )
 
     def eval_model(
-        self, eval_data, output_dir=None, verbose=True, silent=False, **kwargs
+            self, eval_data, output_dir=None, verbose=True, silent=False, **kwargs
     ):
         """
         Evaluates the model on eval_data. Saves results to output_dir.
@@ -1201,7 +1267,7 @@ class Seq2SeqModel:
             from torch.cuda import amp
 
         for batch in tqdm(
-            eval_dataloader, disable=args.silent or silent, desc="Running Evaluation"
+                eval_dataloader, disable=args.silent or silent, desc="Running Evaluation"
         ):
             # batch = tuple(t.to(device) for t in batch)
 
@@ -1248,12 +1314,12 @@ class Seq2SeqModel:
         all_doc_scores = []
         # Batching
         for batch in tqdm(
-            [
-                to_predict[i : i + self.args.eval_batch_size]
-                for i in range(0, len(to_predict), self.args.eval_batch_size)
-            ],
-            desc="Generating outputs",
-            disable=self.args.silent,
+                [
+                    to_predict[i: i + self.args.eval_batch_size]
+                    for i in range(0, len(to_predict), self.args.eval_batch_size)
+                ],
+                desc="Generating outputs",
+                disable=self.args.silent,
         ):
             if self.args.model_type == "marian":
                 input_ids = self.encoder_tokenizer.prepare_seq2seq_batch(
@@ -1316,7 +1382,7 @@ class Seq2SeqModel:
                     num_return_sequences=self.args.num_return_sequences,
                 )
             elif self.args.model_type in ["mbart"]:
-                
+
                 # tgt_lang_token = self.decoder_tokenizer._convert_token_to_id_with_added_voc(
                 #     self.args.tgt_lang
                 # )
@@ -1337,7 +1403,7 @@ class Seq2SeqModel:
                     num_return_sequences=self.args.num_return_sequences,
                 )
             elif self.args.model_type in ["mbart50"]:
-                
+
                 # tgt_lang_token = self.decoder_tokenizer._convert_token_to_id_with_added_voc(
                 #     self.args.tgt_lang
                 # )
@@ -1436,21 +1502,21 @@ class Seq2SeqModel:
             if self.args.model_type in ["rag-token", "rag-sequence"]:
                 return (
                     [
-                        outputs[i : i + self.args.num_return_sequences]
+                        outputs[i: i + self.args.num_return_sequences]
                         for i in range(0, len(outputs), self.args.num_return_sequences)
                     ],
                     [
-                        all_retrieved[i : i + self.args.num_return_sequences]
+                        all_retrieved[i: i + self.args.num_return_sequences]
                         for i in range(0, len(outputs), self.args.num_return_sequences)
                     ],
                     [
-                        all_doc_scores[i : i + self.args.num_return_sequences]
+                        all_doc_scores[i: i + self.args.num_return_sequences]
                         for i in range(0, len(outputs), self.args.num_return_sequences)
                     ],
                 )
             else:
                 return [
-                    outputs[i : i + self.args.num_return_sequences]
+                    outputs[i: i + self.args.num_return_sequences]
                     for i in range(0, len(outputs), self.args.num_return_sequences)
                 ]
         else:
@@ -1489,7 +1555,7 @@ class Seq2SeqModel:
         return results
 
     def load_and_cache_examples(
-        self, data, evaluate=False, no_cache=False, verbose=True, silent=False
+            self, data, evaluate=False, no_cache=False, verbose=True, silent=False
     ):
         """
         Creates a Seq2SeqDataset from data.
@@ -1549,12 +1615,12 @@ class Seq2SeqModel:
         return {metric: values[-1] for metric, values in metric_values.items()}
 
     def save_model(
-        self,
-        output_dir=None,
-        optimizer=None,
-        scheduler=None,
-        model=None,
-        results=None,
+            self,
+            output_dir=None,
+            optimizer=None,
+            scheduler=None,
+            model=None,
+            results=None,
     ):
         if not output_dir:
             output_dir = self.args.output_dir
@@ -1590,8 +1656,8 @@ class Seq2SeqModel:
                     self.encoder_tokenizer.save_pretrained(output_dir)
 
                 if (
-                    self.args.model_type in ["rag-token", "rag-sequence"]
-                    and self.args.save_knowledge_dataset_with_checkpoints
+                        self.args.model_type in ["rag-token", "rag-sequence"]
+                        and self.args.save_knowledge_dataset_with_checkpoints
                 ):
                     output_dataset_directory = os.path.join(
                         output_dir, "knowledge_dataset"
@@ -1659,7 +1725,7 @@ class Seq2SeqModel:
                 "attention_mask": source_mask.to(device),
                 "labels": labels.to(device),
             }
-        elif self.args.model_type in ["mbart","mbart50"]:
+        elif self.args.model_type in ["mbart", "mbart50"]:
             inputs = {
                 "input_ids": batch["input_ids"].to(device),
                 "attention_mask": batch["attention_mask"].to(device),
