@@ -8,8 +8,8 @@ from config.model_args import Seq2SeqArgs
 from experiments.evaluate import bleu, ter, bertscore, bleurt_score
 from seq2seq.seq2seq_model import Seq2SeqModel
 
-model_name = "facebook/mbart-large-50"
-model_type = "auto"
+model_name = "facebook/mbart-large-cc25"
+model_type = "mbart"
 
 SEED = 777
 full = pd.read_csv("data/pt.defmod.wholeset.tag.tsv", sep="\t")
