@@ -38,20 +38,20 @@ model_args.manual_seed = SEED
 model_args.early_stopping_patience = 25
 model_args.save_steps = 3200
 
-model_args.output_dir = os.path.join("outputs", "")
-model_args.best_model_dir = os.path.join("outputs", "mbart50", "best_model")
-model_args.cache_dir = os.path.join("cache_dir", "mbart50")
+model_args.output_dir = os.path.join("outputs", "mbert")
+model_args.best_model_dir = os.path.join("outputs", "mbert", "best_model")
+model_args.cache_dir = os.path.join("cache_dir", "mbert")
 
 model_args.wandb_project = "DORE"
 model_args.wandb_kwargs = {"name": model_name}
 
 model = Seq2SeqModel(
-    encoder_decoder_type=model_type,
-    encoder_decoder_name=model_name,
-    decoder_name=model_name,
+    "bert",
+    "bert-base-multilingual-cased",
+    "bert-base-multilingual-cased",
     args=model_args,
-    use_cuda=torch.cuda.is_available()
 )
+
 
 train, eval = train_test_split(full_train, test_size=0.2, random_state=SEED)
 model.train_model(train, eval_data=eval)
@@ -65,6 +65,12 @@ truth_list = test['target_text'].tolist()
 #     args=model_args,
 #     use_cuda=torch.cuda.is_available()
 # )
+
+model = Seq2SeqModel(
+    "bert",
+    encoder_decoder_name=model_args.best_model_dir,
+    args=model_args,
+)
 
 preds = model.predict(input_list)
 
