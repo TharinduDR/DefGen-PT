@@ -8,7 +8,7 @@ from config.model_args import Seq2SeqArgs
 from experiments.evaluate import bleu, ter, bertscore, bleurt_score
 from seq2seq.seq2seq_model import Seq2SeqModel
 
-model_name = "neuralmind/bert-large-portuguese-cased"
+model_name = "bert-base-multilingual-cased"
 model_type = "bert"
 
 SEED = 777
