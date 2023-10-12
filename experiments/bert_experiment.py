@@ -8,7 +8,7 @@ from config.model_args import Seq2SeqArgs
 from experiments.evaluate import bleu, ter, bertscore, bleurt_score
 from seq2seq.seq2seq_model import Seq2SeqModel
 
-model_name = "bert-base-multilingual-cased"
+model_name = "neuralmind/bert-large-portuguese-cased"
 model_type = "bert"
 
 SEED = 777
@@ -38,17 +38,17 @@ model_args.manual_seed = SEED
 model_args.early_stopping_patience = 25
 model_args.save_steps = 3200
 
-model_args.output_dir = os.path.join("outputs", "mbert")
-model_args.best_model_dir = os.path.join("outputs", "mbert", "best_model")
-model_args.cache_dir = os.path.join("cache_dir", "mbert")
+model_args.output_dir = os.path.join("outputs", "bertimbau")
+model_args.best_model_dir = os.path.join("outputs", "bertimbau", "best_model")
+model_args.cache_dir = os.path.join("cache_dir", "bertimbau")
 
 model_args.wandb_project = "DORE"
 model_args.wandb_kwargs = {"name": model_name}
 
 model = Seq2SeqModel(
     "bert",
-    "bert-base-multilingual-cased",
-    "bert-base-multilingual-cased",
+    "neuralmind/bert-large-portuguese-cased",
+    "neuralmind/bert-large-portuguese-cased",
     args=model_args,
 )
 
