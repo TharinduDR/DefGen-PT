@@ -8,8 +8,8 @@ from config.model_args import Seq2SeqArgs
 from experiments.evaluate import bleu, ter, bertscore, bleurt_score
 from seq2seq.seq2seq_model import Seq2SeqModel
 
-model_name = "neuralmind/bert-large-portuguese-cased"
-model_type = "bert"
+model_name = "xlm-roberta-large"
+model_type = "auto"
 
 SEED = 777
 full = pd.read_csv("data/pt.defmod.wholeset.tag.tsv", sep="\t")
@@ -38,17 +38,17 @@ model_args.manual_seed = SEED
 model_args.early_stopping_patience = 25
 model_args.save_steps = 3200
 
-model_args.output_dir = os.path.join("outputs", "bertimbau")
-model_args.best_model_dir = os.path.join("outputs", "bertimbau", "best_model")
-model_args.cache_dir = os.path.join("cache_dir", "bertimbau")
+model_args.output_dir = os.path.join("outputs", "xlmrlarge")
+model_args.best_model_dir = os.path.join("outputs", "xlmrlarge", "best_model")
+model_args.cache_dir = os.path.join("cache_dir", "xlmrlarge")
 
 model_args.wandb_project = "DORE"
 model_args.wandb_kwargs = {"name": model_name}
 
 model = Seq2SeqModel(
-    "bert",
-    "neuralmind/bert-large-portuguese-cased",
-    "neuralmind/bert-large-portuguese-cased",
+    model_type,
+    model_name,
+    model_name,
     args=model_args,
 )
 
