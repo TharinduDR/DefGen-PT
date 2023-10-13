@@ -73,8 +73,11 @@ model = Seq2SeqModel(
 )
 
 preds = model.predict(input_list)
-
 del model
+
+test["predictions"] = preds
+test.to_csv(os.path.join("outputs", "xlmrlarge", "predictions.tsv"), sep='\t', encoding='utf-8', index=False)
+
 
 print("Bleu Score ", bleu(truth_list, preds))
 print("Ter Score ", ter(truth_list, preds))

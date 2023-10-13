@@ -38,9 +38,9 @@ model_args.manual_seed = SEED
 model_args.early_stopping_patience = 25
 model_args.save_steps = 3200
 
-model_args.output_dir = os.path.join("outputs", "mbart50")
-model_args.best_model_dir = os.path.join("outputs", "mbart50", "best_model")
-model_args.cache_dir = os.path.join("cache_dir", "mbart50")
+model_args.output_dir = os.path.join("outputs", "mbart")
+model_args.best_model_dir = os.path.join("outputs", "mbart", "best_model")
+model_args.cache_dir = os.path.join("cache_dir", "mbart")
 
 model_args.wandb_project = "DORE"
 model_args.wandb_kwargs = {"name": model_name}
@@ -68,6 +68,10 @@ model = Seq2SeqModel(
 preds = model.predict(input_list)
 
 del model
+
+test["predictions"] = preds
+test.to_csv(os.path.join("outputs", "mbart", "predictions.tsv"), sep='\t', encoding='utf-8', index=False)
+
 
 print("Bleu Score ", bleu(truth_list, preds))
 print("Ter Score ", ter(truth_list, preds))

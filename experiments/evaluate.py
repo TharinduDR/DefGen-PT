@@ -13,7 +13,7 @@ def bertscore(ref, gen):
 
 
 def bleurt_score(ref, gen):
-    bleurt = load_metric("bleurt", 'bleurt-20')
+    bleurt = load_metric("bleurt")
     bleurt_scores = bleurt.compute(predictions=gen, references=ref)
     return statistics.mean(bleurt_scores['scores'])
 

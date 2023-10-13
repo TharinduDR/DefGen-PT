@@ -58,6 +58,9 @@ truth_list = test['target_text'].tolist()
 model = T5Model(model_type, model_args.best_model_dir, args=model_args, use_cuda=torch.cuda.is_available())
 preds = model.predict(input_list)
 
+test["predictions"] = preds
+test.to_csv(os.path.join("outputs", "mt5_base", "predictions.tsv"), sep='\t', encoding='utf-8', index=False)
+
 del model
 
 print("Bleu Score ", bleu(truth_list, preds))
