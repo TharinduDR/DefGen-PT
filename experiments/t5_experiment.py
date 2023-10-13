@@ -8,7 +8,7 @@ from config.model_args import T5Args
 from experiments.evaluate import bleu, ter, bertscore, bleurt_score
 from t5.t5_model import T5Model
 
-model_name = "google/mt5-base"
+model_name = "google/mt5-large"
 model_type = "mt5"
 
 
@@ -40,9 +40,9 @@ model_args.manual_seed = SEED
 model_args.early_stopping_patience = 25
 model_args.save_steps = 3200
 
-model_args.output_dir = os.path.join("outputs", "mt5_base")
-model_args.best_model_dir = os.path.join("outputs", "mt5_base", "best_model")
-model_args.cache_dir = os.path.join("cache_dir", "mt5_base")
+model_args.output_dir = os.path.join("outputs", "mt5_large")
+model_args.best_model_dir = os.path.join("outputs", "mt5_large", "best_model")
+model_args.cache_dir = os.path.join("cache_dir", "mt5_large")
 
 model_args.wandb_project = "DORE"
 model_args.wandb_kwargs = {"name": model_name}
@@ -59,7 +59,7 @@ model = T5Model(model_type, model_args.best_model_dir, args=model_args, use_cuda
 preds = model.predict(input_list)
 
 test["predictions"] = preds
-test.to_csv(os.path.join("outputs", "mt5_base", "predictions.tsv"), sep='\t', encoding='utf-8', index=False)
+test.to_csv(os.path.join("outputs", "mt5_large", "predictions.tsv"), sep='\t', encoding='utf-8', index=False)
 
 del model
 
