@@ -8,8 +8,8 @@ from config.model_args import Seq2SeqArgs
 from experiments.evaluate import bleu, ter, bertscore, bleurt_score
 from seq2seq.seq2seq_model import Seq2SeqModel
 
-model_name = "xlm-roberta-large"
-model_type = "auto"
+model_name = "neuralmind/bert-large-portuguese-cased"
+model_type = "bert"
 
 SEED = 777
 full = pd.read_csv("data/pt.defmod.wholeset.tag.tsv", sep="\t")
@@ -21,7 +21,7 @@ model_args = Seq2SeqArgs()
 model_args.num_train_epochs = 10
 model_args.no_save = False
 model_args.fp16 = False
-model_args.learning_rate = 1e-4
+model_args.learning_rate = 1e-5
 model_args.train_batch_size = 8
 model_args.max_seq_length = 256
 model_args.evaluate_generated_text = True
@@ -38,9 +38,9 @@ model_args.manual_seed = SEED
 model_args.early_stopping_patience = 25
 model_args.save_steps = 3200
 
-model_args.output_dir = os.path.join("outputs", "xlmrlarge")
-model_args.best_model_dir = os.path.join("outputs", "xlmrlarge", "best_model")
-model_args.cache_dir = os.path.join("cache_dir", "xlmrlarge")
+model_args.output_dir = os.path.join("outputs", "bertimabu")
+model_args.best_model_dir = os.path.join("outputs", "bertimabu", "best_model")
+model_args.cache_dir = os.path.join("cache_dir", "bertimabu")
 
 model_args.wandb_project = "DORE"
 model_args.wandb_kwargs = {"name": model_name}
@@ -67,7 +67,7 @@ truth_list = test['target_text'].tolist()
 # )
 
 model = Seq2SeqModel(
-    "bert",
+    model_type,
     encoder_decoder_name=model_args.best_model_dir,
     args=model_args,
 )
@@ -76,7 +76,7 @@ preds = model.predict(input_list)
 del model
 
 test["predictions"] = preds
-test.to_csv(os.path.join("outputs", "xlmrlarge", "predictions.tsv"), sep='\t', encoding='utf-8', index=False)
+test.to_csv(os.path.join("outputs", "bertimabu", "predictions.tsv"), sep='\t', encoding='utf-8', index=False)
 
 
 print("Bleu Score ", bleu(truth_list, preds))
