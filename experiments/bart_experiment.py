@@ -53,7 +53,7 @@ model = Seq2SeqModel(
 )
 
 train, eval = train_test_split(full_train, test_size=0.2, random_state=SEED)
-model.train_model(train, eval_data=eval, args=model_args)
+model.train_model(train, eval_data=eval)
 
 input_list = test['input_text'].tolist()
 truth_list = test['target_text'].tolist()

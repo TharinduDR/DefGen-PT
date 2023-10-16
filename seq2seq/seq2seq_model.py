@@ -458,7 +458,7 @@ class Seq2SeqModel:
             **kwargs,
         )
 
-        if args.save_recent_only:
+        if self.args.save_recent_only:
             del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
             for del_path in del_paths:
                 shutil.rmtree(del_path)
@@ -828,7 +828,7 @@ class Seq2SeqModel:
                             output_dir, "checkpoint-{}".format(global_step)
                         )
 
-                        if args.save_recent_only:
+                        if self.args.save_recent_only:
                             del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
                             for del_path in del_paths:
                                 shutil.rmtree(del_path)
@@ -862,7 +862,7 @@ class Seq2SeqModel:
 
                         if args.save_eval_checkpoints:
 
-                            if args.save_recent_only:
+                            if self.args.save_recent_only:
                                 del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
                                 for del_path in del_paths:
                                     shutil.rmtree(del_path)
@@ -895,7 +895,7 @@ class Seq2SeqModel:
                             best_eval_metric = results[args.early_stopping_metric]
                             if args.save_best_model:
 
-                                if args.save_recent_only:
+                                if self.args.save_recent_only:
                                     del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
                                     for del_path in del_paths:
                                         shutil.rmtree(del_path)
@@ -914,7 +914,7 @@ class Seq2SeqModel:
                             ):
                                 best_eval_metric = results[args.early_stopping_metric]
                                 if args.save_best_model:
-                                    if args.save_recent_only:
+                                    if self.args.save_recent_only:
                                         del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
                                         for del_path in del_paths:
                                             shutil.rmtree(del_path)
@@ -965,7 +965,7 @@ class Seq2SeqModel:
                                 best_eval_metric = results[args.early_stopping_metric]
                                 if args.save_best_model:
 
-                                    if args.save_recent_only:
+                                    if self.args.save_recent_only:
                                         del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
                                         for del_path in del_paths:
                                             shutil.rmtree(del_path)
@@ -1020,7 +1020,7 @@ class Seq2SeqModel:
 
             if args.save_model_every_epoch:
 
-                if args.save_recent_only:
+                if self.args.save_recent_only:
                     del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
                     for del_path in del_paths:
                         shutil.rmtree(del_path)
@@ -1037,7 +1037,7 @@ class Seq2SeqModel:
 
                 if args.save_eval_checkpoints:
 
-                    if args.save_recent_only:
+                    if self.args.save_recent_only:
                         del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
                         for del_path in del_paths:
                             shutil.rmtree(del_path)
@@ -1063,7 +1063,7 @@ class Seq2SeqModel:
                     best_eval_metric = results[args.early_stopping_metric]
                     if args.save_best_model:
 
-                        if args.save_recent_only:
+                        if self.args.save_recent_only:
                             del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
                             for del_path in del_paths:
                                 shutil.rmtree(del_path)
@@ -1083,7 +1083,7 @@ class Seq2SeqModel:
                         best_eval_metric = results[args.early_stopping_metric]
                         if args.save_best_model:
 
-                            if args.save_recent_only:
+                            if self.args.save_recent_only:
                                 del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
                                 for del_path in del_paths:
                                     shutil.rmtree(del_path)
@@ -1134,7 +1134,7 @@ class Seq2SeqModel:
                         best_eval_metric = results[args.early_stopping_metric]
                         if args.save_best_model:
 
-                            if args.save_recent_only:
+                            if self.args.save_recent_only:
                                 del_paths = glob.glob(os.path.join(output_dir, 'checkpoint-*'))
                                 for del_path in del_paths:
                                     shutil.rmtree(del_path)
