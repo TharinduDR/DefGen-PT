@@ -8,8 +8,8 @@ from config.model_args import Seq2SeqArgs
 from experiments.evaluate import bleu, ter, bertscore, bleurt_score
 from seq2seq.seq2seq_model import Seq2SeqModel
 
-model_name = "neuralmind/bert-large-portuguese-cased"
-model_type = "bert"
+model_name = "xlm-roberta-large"
+model_type = "xlmroberta"
 
 SEED = 777
 full = pd.read_csv("data/pt.defmod.wholeset.tag.tsv", sep="\t")
@@ -38,9 +38,9 @@ model_args.manual_seed = SEED
 model_args.early_stopping_patience = 25
 model_args.save_steps = 3200
 
-model_args.output_dir = os.path.join("outputs", "bertimabu")
-model_args.best_model_dir = os.path.join("outputs", "bertimabu", "best_model")
-model_args.cache_dir = os.path.join("cache_dir", "bertimabu")
+model_args.output_dir = os.path.join("outputs", "xlmroberta")
+model_args.best_model_dir = os.path.join("outputs", "xlmroberta", "best_model")
+model_args.cache_dir = os.path.join("cache_dir", "xlmroberta")
 
 model_args.wandb_project = "DORE"
 model_args.wandb_kwargs = {"name": model_name}
@@ -76,7 +76,7 @@ preds = model.predict(input_list)
 del model
 
 test["predictions"] = preds
-test.to_csv(os.path.join("outputs", "bertimabu", "predictions.tsv"), sep='\t', encoding='utf-8', index=False)
+test.to_csv(os.path.join("outputs", "xlmroberta", "predictions.tsv"), sep='\t', encoding='utf-8', index=False)
 
 
 print("Bleu Score ", bleu(truth_list, preds))
