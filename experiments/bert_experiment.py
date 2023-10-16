@@ -9,7 +9,7 @@ from experiments.evaluate import bleu, ter, bertscore, bleurt_score
 from seq2seq.seq2seq_model import Seq2SeqModel
 
 model_name = "xlm-roberta-large"
-model_type = "xlmroberta"
+model_type = "auto"
 
 SEED = 777
 full = pd.read_csv("data/pt.defmod.wholeset.tag.tsv", sep="\t")
